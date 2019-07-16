@@ -1,2 +1,2 @@
 # socketsServer
-An simple sockets server to better understand networking
+Simple sockets server scripts to better understand networking
