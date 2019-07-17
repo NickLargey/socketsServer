@@ -2,13 +2,14 @@ import optparse
 from socket import *
 from threading import *
 
-screenLock = Semaphore(value=1)
+screenLock = Semaphore(value=6)
 
-def connScan(tgthost, tgtport):
+def connScan(tgthost, tgtport):	
 	try:
+		
 		connSkt = socket(AF_INET, SOCK_STREAM)
 		connSkt.connect((tgthost, tgtport))
-		connSkt.send('Hello\r\n')
+		connSkt.send(b'Hello')
 
 		results = connSkt.recv(100)
 		screenLock.acquire()
@@ -16,9 +17,9 @@ def connScan(tgthost, tgtport):
 
 	except:
 		screenLock.acquire()
-		print('[-] ' + str(tgtport) + ' tcp closed')
-
+		print('[-] ' + str(tgtport) + ' tcp closed ')
 	finally:
+		print('finally')
 		screenLock.release()
 		connSkt.close()
 
@@ -47,12 +48,13 @@ def main():
 	parser.add_option('-H', dest='tgthost', type='string')
 	parser.add_option('-P', dest='tgtport', type='string')
 	options, args = parser.parse_args()
-	if options.tgthost == None or options.tgthost == None:
+	if options.tgthost == None or options.tgtport == None:
 		print(parser.usage)
 		exit(0)
 	else:
 		tgthost = options.tgthost
-		tgtports = str(options.tgtport).split(',')
+		tgtports = list(range(int(options.tgtport),1024))
+		tgtports = [str(x) for x in tgtports]
 
 	portScan(tgthost, tgtports)
 
